@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CH EN Formatter</title>
+  </head>
+  <body
+    style="
+      font-family: Arial, Helvetica, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    "
+  >
+    <h2>Text Formatter</h2>
+    <textarea
+      id="input-text"
+      cols="30"
+      rows="5"
+      placeholder="Input text here"
+    ></textarea>
+    <br />
+    <button id="btn-format">Click here to format</button>
+    <div id="result" style="visibility: hidden">
+      <h2>Completed</h2>
+      <button id="btn-output-copy">Click here to copy</button>
+      <br />
+      <textarea id="output-text" cols="100" rows="50"> </textarea>
+    </div>
+
+    <!-- <script src="main.js"></script> -->
+    <script>
+      const inputText = document.getElementById('input-text');
+      const btnFormat = document.getElementById('btn-format');
+      const outputText = document.getElementById('output-text');
+      const result = document.getElementById('result');
+      const btnCopy = document.getElementById('btn-output-copy');
+
+      btnFormat.addEventListener('click', () => {
+        const REGEX_CHINESE = /[\u4e00-\u9fff]|[\u3400-\u4dbf]|[\u{20000}-\u{2a6df}]|[\u{2a700}-\u{2b73f}]|[\u{2b740}-\u{2b81f}]|[\u{2b820}-\u{2ceaf}]|[\uf900-\ufaff]|[\u3300-\u33ff]|[\ufe30-\ufe4f]|[\uf900-\ufaff]|[\u{2f800}-\u{2fa1f}]/u;
+        //console.log(REGEX_CHINESE.test(str));
+        var symbol = /[`，。、；‘【】、·《》？：“{}|——）（*&……%￥#！~”“!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+
+        let inPara = inputText.value;
+        let outPara = '';
+        let lastLang = REGEX_CHINESE.test(inPara[0]) ? 'CN' : 'EN';
+        console.log(lastLang);
+        for (i = 0; i < inPara.length; i++) {
+          let word = inPara[i];
+          if (REGEX_CHINESE.test(word)) {
+            if (lastLang == 'EN') {
+              outPara += `\n${word}`;
+              lastLang = 'CN';
+            } else if (word == ' ' || word == '\n') {
+            } else {
+              outPara += word;
+            }
+          } else {
+            if (lastLang == 'CN') {
+              if (word == ' ' || word == '\n') {
+              } else if (symbol.test(word)) {
+                outPara += word;
+              } else {
+                outPara += `\n${word}`;
+                lastLang = 'EN';
+              }
+            } else {
+              if (word == '\n') {
+                outPara += ' ';
+              } else {
+                outPara += word;
+              }
+            }
+          }
+        }
+        res = outPara.replace('  ', ' ');
+        outputText.innerHTML = res;
+        result.style.visibility = 'visible';
+      });
+
+      btnCopy.addEventListener('click', () => {
+        var text = outputText;
+        text.select();
+        document.execCommand('copy');
+        alert('Text copied!');
+      });
+    </script>
+  </body>
+</html>
